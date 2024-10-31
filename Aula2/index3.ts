@@ -5,6 +5,23 @@ enum Trabalho {
     sindico
 }
 
+enum Motivo {
+    Aluguel,
+    PagarFuncionario,
+    PagarEmpresaParceira
+}
+
+enum TipoAreas {
+    Lazer,
+    Moradia
+}
+
+enum Servicos {
+    Jardinagem,
+    Limpeza,
+    Portaria
+}
+
 
 
 
@@ -43,11 +60,12 @@ class Apartamento {
 
 class Cobranca {
     data: string
-    motivo: string
-    quemPagou: Morador | Setor
+    motivo: Motivo
+    quemPagou: Morador | Setor | Condominio
     valor: number
+    status: string = "não paga"
 
-    constructor(data: string, motivo: string, quemPagou: Morador | Setor, valor: number) {
+    constructor(data: string, motivo: Motivo, quemPagou: Morador | Setor | Condominio, valor: number) {
         this.data = data
         this.motivo = motivo
         this.quemPagou = quemPagou
@@ -135,6 +153,23 @@ class Morador extends Pessoa {
         condominio.feedbacks.push(newFeedBack)
    }
 
+
+   pagarAluguel(data: string, motivo: Motivo, valor: number, condominio: Condominio)  {
+     let newCobranca = new Cobranca(data, motivo, this, valor)
+     newCobranca.status = "paga"
+     this.historicoDePagamentos.push(newCobranca)
+     condominio.historicoDePagemntos.push(newCobranca)
+   }
+
+
+   agendarArea(area: Area) {
+        if(area.moradorInquilino === null) {
+            area.status = "Agendado"
+            area.moradorInquilino = this
+        }
+        
+   }
+
 }
 
 
@@ -145,7 +180,7 @@ class Setor {
     trabalhadores: Array<Funcionario> = []
     salarioMedio: number = 0
     area: Trabalho
-    pagamentos: Array<Cobranca> = []
+    HistoricosDePagamentos: Array<Cobranca> = []
  
     constructor(nome: string, area: Trabalho) {
         this.nome = nome
@@ -170,15 +205,55 @@ class Setor {
 
     }
 
-    pagarFuncionarios(data: string, motivo: string, valor: number) {
+    pagarFuncionarios(data: string, motivo: Motivo, valor: number) {
         const cobranca = new Cobranca(data, motivo, this, valor)
+        cobranca.status = 'paga'
         for(let i = 0; i < this.trabalhadores.length; i++) {
             this.trabalhadores[i].historicoDePagamentos.push(cobranca)
-            this.pagamentos.push(cobranca)
+            this.HistoricosDePagamentos.push(cobranca)
         }
     }
 
 
+}
+
+class EmpresaContrada {
+
+    historicoDePagemntos: Array<Cobranca> = []
+
+    constructor(public nome: string, public servico: Servicos, public contato: number, public contrato: string, ) {
+        this.nome = nome
+        this.servico = servico
+        this.contato = contato
+        this.contato = contato
+    }
+}
+
+
+class Manutencao {
+    status: string = 'não paga'
+
+     constructor(public area: Area, public tipo: Servicos, public empresaResponsavel: EmpresaContrada, public data: string, public valor: number, public descricao: string ) {
+        this.area = area
+        this.tipo = tipo
+        this.empresaResponsavel = empresaResponsavel
+        this.data = data
+        this.valor = valor
+        this.descricao = descricao
+     }
+
+   
+ }
+
+class Area {
+    status: string = 'Livre'
+    moradorInquilino: Morador | null = null
+
+    constructor(public tipoArea: TipoAreas, public nome: string, public setorResponsavel: Setor) {
+        this.tipoArea = tipoArea
+        this.nome = nome
+        this.setorResponsavel = setorResponsavel
+    }
 }
 
 
@@ -207,11 +282,15 @@ class Funcionario extends Pessoa {
 
 class Condominio {
 
+    empresasContratadas: Array<EmpresaContrada> = []
+    manutencoes: Array<Manutencao> = []
+    areas: Array<Area> = []
+    historicoDePagemntos: Array<Cobranca> = []
     apartamentos: Array<Apartamento> = []
     moradores: Array<Morador> = []
     setores: Array<Setor> = []
     feedbacks: Feedback[] = []
-
+   
 
 
     cadastrarApartamento(numero: number, bloco: string, andar: number, vaga: number) {
@@ -233,6 +312,47 @@ class Condominio {
         newSetor.id = this.setores.length + 1
         this.setores.push(newSetor)
     }
+   
+    lerFeedback() {
+        for(let i = 0; i < this.feedbacks.length; i++ ) {
+            this.feedbacks[i].status = "Lida"
+        }
+    }
+
+    lancarCobrancaMorador(data: string, motivo: Motivo, quemPagou: Morador, valor: number) {
+      const newCobranca = new Cobranca(data, motivo, quemPagou, valor)
+      this.historicoDePagemntos.push(newCobranca)
+      quemPagou.historicoDePagamentos.push(newCobranca)
+
+    }
+
+
+    cadastrarArea( tipoArea: TipoAreas,  nome: string,  setorResponsavel: Setor) {
+        let newArea = new Area(tipoArea, nome, setorResponsavel)
+        this.areas.push(newArea)
+    }
+
+    contratarEmpresa( nome: string,  servico: Servicos,  contato: number,  contrato: string, ) {
+        const newEmpresa = new EmpresaContrada(nome, servico, contato, contrato)
+        this.empresasContratadas.push(newEmpresa)
+    }
+
+    iniciarManutencao(area: Area ,tipo: Servicos, empresaResponsavel: EmpresaContrada, data: string,  valor: number, descricao: string ) {
+        const newManutencao = new Manutencao(area, tipo, empresaResponsavel, data, valor, descricao)
+        this.manutencoes.push(newManutencao)
+    }
+
+    pagarManutencao(data: string, motivo: Motivo, valor: number) {
+        const newCobranca = new Cobranca(data, motivo, this, valor)
+        newCobranca.status = "paga"
+        for(let i = 0; i < this.manutencoes.length; i++) {
+            this.manutencoes[i].empresaResponsavel.historicoDePagemntos.push(newCobranca)
+            this.manutencoes[i].status = "paga"
+            this.historicoDePagemntos.push(newCobranca)
+        }
+
+    }
+
 
 
 
@@ -243,17 +363,54 @@ class Condominio {
 
 
 // funcionalidades do cadastro de moradores
-const condominio = new Condominio()
-condominio.cadastrarApartamento(180, "bloco A", 3, 105)
-condominio.cadastrarMorador("tavares", "142-333-999-88", "arthur@gmail.com", 51992554789, condominio.apartamentos[0])
-condominio.moradores[0].cadastrarPet("julio", "cachorro")
-condominio.moradores[0].cadastrarVeiculo("Carro", "ferrari", "980B")
-console.log(condominio.moradores)
 
 // funcionalidades do serviços
-condominio.cadastrarSetor("setor a", Trabalho.Zelador)
-condominio.setores[0].cadastrarFuncionario("joao", "158-789-999-11", "joao@gmail.com", 7990670, Trabalho.Zelador, 1700)
-condominio.setores[0].obterMediaSalarial()
-condominio.setores[0].pagarFuncionarios("11/08/2025", "pagar funcionarios", 1700)
-console.log(condominio.setores[0].trabalhadores)
-console.log(condominio.setores)
+
+
+
+const portoGaribaldi = new Condominio()
+
+console.log("moradores e apartamentos\n")
+portoGaribaldi.cadastrarApartamento(103, "bloco a", 5, 305)
+portoGaribaldi.cadastrarMorador("Arthur Santos Tavares Souto", "142-555-159-99", "arthurtavares@gmail.com", 51993953661, portoGaribaldi.apartamentos[0])
+portoGaribaldi.moradores[0].cadastrarPet("tutu", "Cachorro")
+portoGaribaldi.moradores[0].cadastrarVeiculo("carro", "civic", "BD2909")
+console.log(portoGaribaldi.moradores[0])
+console.log("////////////////////////////////////////////////////////////////////////////")
+
+console.log("setores\n")
+portoGaribaldi.cadastrarSetor("Setor de Limpeza A", Trabalho.Zelador)
+portoGaribaldi.setores[0].cadastrarFuncionario("Jõao", "142-333-388-99", "jõao@gmail.com", 519299292, Trabalho.Zelador, 1500)
+portoGaribaldi.setores[0].cadastrarFuncionario("Julia", "142-333-388-99", "julia@gmail.com", 519299292, Trabalho.Zelador, 1500)
+portoGaribaldi.setores[0].pagarFuncionarios("10/20/2027", Motivo.PagarFuncionario, 1500)
+portoGaribaldi.setores[0].obterMediaSalarial()
+console.log(portoGaribaldi.setores[0])
+
+
+console.log("////////////////////////////////////////////////////////////////////////////")
+console.log("metodos de pagar ou cobrança\n")
+portoGaribaldi.lancarCobrancaMorador("10/10/2020", Motivo.Aluguel, portoGaribaldi.moradores[0], 1700)
+portoGaribaldi.moradores[0].pagarAluguel("10/12/2019", Motivo.Aluguel, 1999, portoGaribaldi)
+console.log(portoGaribaldi.historicoDePagemntos)
+
+
+console.log("////////////////////////////////////////////////////////////////////////////")
+console.log("metodos da area\n")
+portoGaribaldi.cadastrarArea(TipoAreas.Lazer, "Kioski", portoGaribaldi.setores[0])
+portoGaribaldi.moradores[0].agendarArea(portoGaribaldi.areas[0])
+console.log(portoGaribaldi.areas[0])
+
+
+console.log("////////////////////////////////////////////////////////////////////////////")
+console.log("metodos empresas\n")
+
+portoGaribaldi.contratarEmpresa("limpaTudo", Servicos.Limpeza, 5199299292, "2 anos")
+portoGaribaldi.iniciarManutencao(portoGaribaldi.areas[0], Servicos.Limpeza, portoGaribaldi.empresasContratadas[0], "10/12/2089", 4500, "Limparrr tudo")
+portoGaribaldi.pagarManutencao("10/12/2089", Motivo.PagarEmpresaParceira, 4500)
+
+
+console.log("ler feedbacks")
+
+portoGaribaldi.moradores[0].darFeedback(portoGaribaldi.moradores[0], "muito barulhento", "diminuir o barulho", portoGaribaldi)
+portoGaribaldi.lerFeedback()
+console.log(portoGaribaldi)
