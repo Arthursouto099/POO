@@ -114,69 +114,69 @@
 //     }
 // }
 
-class Aluno {
-    nome: string = ""
-    sobrenome: string = ""
-    peso: number = 0
-    treinos: Array<Treino> = []
-    altura: number = 0
+// class Aluno {
+//     nome: string = ""
+//     sobrenome: string = ""
+//     peso: number = 0
+//     treinos: Array<Treino> = []
+//     altura: number = 0
 
-    constructor(nome: string, sobrenome: string, peso: number, altura: number) {
-        this.nome = nome
-        this.sobrenome = sobrenome
-        this.peso = peso
-        this.altura = altura
-    }
+//     constructor(nome: string, sobrenome: string, peso: number, altura: number) {
+//         this.nome = nome
+//         this.sobrenome = sobrenome
+//         this.peso = peso
+//         this.altura = altura
+//     }
 
-    calcularImc(): number {
-        return this.peso / (this.altura * 2)
-    }
+//     calcularImc(): number {
+//         return this.peso / (this.altura * 2)
+//     }
 
-    adicionarTreino(treino: Treino ) {
-        this.treinos.push(treino)
-    }
+//     adicionarTreino(treino: Treino ) {
+//         this.treinos.push(treino)
+//     }
 
-}
+// }
 
-let aluno = new Aluno("tavares", "souto", 53, 1.80)
-
-
-class Academia {
-    alunos: Array<Aluno> = []
-
-    adicionarAluno(aluno: Aluno) {
-        this.alunos.push(aluno)
-    }
-
-    adicionarTreinoAluno(aluno: Aluno, descricao: string, serie: number, repticoes: number) {
-        const treino = new Treino(descricao, serie, repticoes)
-        aluno.adicionarTreino(treino)
-    }
+// let aluno = new Aluno("tavares", "souto", 53, 1.80)
 
 
-}
+// class Academia {
+//     alunos: Array<Aluno> = []
+
+//     adicionarAluno(aluno: Aluno) {
+//         this.alunos.push(aluno)
+//     }
+
+//     adicionarTreinoAluno(aluno: Aluno, descricao: string, serie: number, repticoes: number) {
+//         const treino = new Treino(descricao, serie, repticoes)
+//         aluno.adicionarTreino(treino)
+//     }
 
 
-const academia: Academia = new Academia()
+// }
 
 
-academia.adicionarAluno(aluno)
-
-console.log(academia.alunos)
+// const academia: Academia = new Academia()
 
 
-class Treino{
-    descricao: string
-    serie: number
-    repticoes: number
+// academia.adicionarAluno(aluno)
 
-    constructor(descricao: string, serie: number, repticoes: number) {
-        this.descricao = descricao
-        this.serie = serie
-        this.repticoes = repticoes
-    }
-}
+// console.log(academia.alunos)
 
-academia.adicionarTreinoAluno(aluno, "treinar bastnate", 5, 6)
 
-console.log(aluno.treinos)
+// class Treino{
+//     descricao: string
+//     serie: number
+//     repticoes: number
+
+//     constructor(descricao: string, serie: number, repticoes: number) {
+//         this.descricao = descricao
+//         this.serie = serie
+//         this.repticoes = repticoes
+//     }
+// }
+
+// academia.adicionarTreinoAluno(aluno, "treinar bastnate", 5, 6)
+
+// console.log(aluno.treinos)
