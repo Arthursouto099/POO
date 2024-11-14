@@ -1,4 +1,4 @@
-import { Usuario, Produto, Estoque } from "./aula";
+import { Usuario, Estoque } from "./aula";
 
 const userOne = new Usuario("tavares", 17, "142-555-666-88")
 const estoque = new Estoque(userOne)
