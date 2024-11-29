@@ -15,6 +15,10 @@ dar(palavra: string, nome?:string, idade?: number) {
     else if(idade === undefined) {
         console.log("tutut")
     }
+
+    else if(idade !== undefined) {
+        console.log('aaa')
+    }
 }
 
 
@@ -24,4 +28,4 @@ dar(palavra: string, nome?:string, idade?: number) {
 
 const teste = new darOi()
 
-teste.dar("oii", "tavares")
+teste.dar("oii", "tavares", 45)
