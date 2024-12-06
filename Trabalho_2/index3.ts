@@ -90,7 +90,7 @@ class GasStation {
 
     constructor(public name: string) {}
 
-    private GenerateInvoice(company: GasStation, value: number,  owner: Customer | Client, vehicle: Vehicle, vehicleType: VehicleType) {
+    private GenerateInvoice(company: GasStation, value: number,  owner: Customer | Client, vehicle: Vehicle, vehicleType: VehicleType,  paymentMethod: 'Dinheiro' | CardPayment) {
         const invoice = new Invoice(company, value, owner, vehicle, vehicleType)
         return {
          company: this.name,
@@ -98,7 +98,8 @@ class GasStation {
          client: owner instanceof Client ? `Nome: ${owner.name}, Cnpj: ${owner.cnpj}`: `Nome: ${owner.name}, Cpf: ${owner.cpf}`,
          vehicle: `Vehicle Model: ${vehicle.model}, Vehicle Plate: ${vehicle.plate}, Type Vehicle: ${vehicle.VehicleType}`,
          discount: owner instanceof Client ? Number(invoice.discountToVehicle().toFixed(2)) : 0,
-         FinalValue: owner instanceof Client ? value - Number(invoice.discountToVehicle().toFixed(2)) : value - 0
+         FinalValue: owner instanceof Client ? value - Number(invoice.discountToVehicle().toFixed(2)) : value - 0,
+         paymentMethod: paymentMethod
         }
     }
 
@@ -135,7 +136,7 @@ class GasStation {
         return 'Verificação completa'
     }
 
-    public fillTheVehicleTank(vehicle: Vehicle, qtdEmLitros: number, typeGasoline: "diesel" | "gasoline", client: Customer | Client) {
+    public fillTheVehicleTank(vehicle: Vehicle, qtdEmLitros: number, typeGasoline: "diesel" | "gasoline", client: Customer | Client, paymentMethod: 'Dinheiro' | CardPayment) {
         this._gasolineStock.gasolineLiter -= qtdEmLitros
         vehicle.tank += qtdEmLitros
         let value = null
@@ -151,7 +152,7 @@ class GasStation {
         console.log(`O valor com base no tipo da gasolina e no litro saiu exatemnte ${value?.toFixed(2)}`)
 
         if(value !== null) {
-            const invoice = this.GenerateInvoice(this, value, client, vehicle, vehicle.VehicleType)
+            const invoice = this.GenerateInvoice(this, value, client, vehicle, vehicle.VehicleType, paymentMethod)
             this._invoices.push(invoice)
             console.log(invoice)
             return invoice
@@ -161,23 +162,24 @@ class GasStation {
 }
 
 
-const v1 = new Vehicle("2397390", "Camaro", null)
-const c1 = new Client("PetroRotas", "394-4324-43232")
+const vehicleOne = new Vehicle("2397390", "Camaro", null)
+const clientOne = new Client("PetroRotas", "394-4324-43232")
 
 
-const v2 = new Car('23432ffsa', "BMW", null)
-const c2 = new Customer("Tavares", '378-333-333-33',  v2)
-console.log(v2)
-c1.addVehicle(v1)
+const vehicleTwo = new Car('23432ffsa', "BMW", null)
+const customerOne = new Customer("Tavares", '378-333-333-33',  vehicleTwo)
+
+clientOne.addVehicle(vehicleOne)
 const gas = new GasStation("Algum posto de gasolina")
+const cartao = new CardPayment("Bradesco", clientOne, 500)
 gas.toFill()
 
 
-gas.fillTheVehicleTank(v1, 5, "diesel", c1)
-gas.fillTheVehicleTank(c2.vehicle, 5, "gasoline", c2)
+gas.fillTheVehicleTank(vehicleOne, 5, "diesel", clientOne, 'Dinheiro')
+gas.fillTheVehicleTank(customerOne.vehicle, 5, "gasoline", customerOne, cartao)
 
 
 console.log(gas.getInvoices())
 
 gas.checkGasolineStock()
-// console.log(c1.get_Vhehicles())
+// console.log(clientOne.get_Vhehicles())
