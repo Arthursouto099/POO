@@ -45,12 +45,12 @@ abstract class Account {
     }
 
 
-    abstract withdraw(valueToWitdraw: number, nameInvestment?: string): number
+    abstract withdraw(valueToWitdraw: number): number
 
 
     transferMoney(account: Account, value: number) {
         if (value > this.balance) {
-            console.log('Salado insuficiente')
+            console.log('Saldo insuficiente')
         }
         else if (value > 499999) {
             console.log("Limite de Tranferencia atingido.")
@@ -117,27 +117,41 @@ class AccountInvestment extends Account {
 
 
 
+    withdraw(valueToWitdraw: number): number {
+        if (valueToWitdraw > 2000) {
+            console.log("Você ultrapassou o limite diario de 2000R$")
+            return 0
+        }
+        else if (valueToWitdraw > this.getBalance()) {
+            console.log("Você está sacando mais dinheiro do que possui em saldo")
+            return 0
+        }
+
+        console.log("Saque feito com sucesso", `Você sacou ${valueToWitdraw}`)
+        const valueNow = this.getBalance() - valueToWitdraw
+        console.log(`Seu saldo atual é de ${valueNow}`)
+        return this.setBalance(valueNow)
+    }
 
 
+    withdrawInInvestment(valueToWitdraw: number, nameInvestment: string): void  {
 
-    withdraw(valueToWitdraw: number, nameInvestment: string): number {
       this.investments.forEach(investment => {
         if(investment.nameInvestment === nameInvestment) {
-            if(valueToWitdraw > investment.valueInvested) {
-                console.log("Saldo insuficiente")
-                return 0
-            }
+           
+           if(investment.valueInvested < valueToWitdraw) {
+            return console.log("Saldo insuficiente no investimento.")
             
-            console.log(`${investment.valueInvested}$, Valor antes do saque`)
-            investment.valueInvested -= valueToWitdraw
-            console.log(`o valor do investimento ${investment.nameInvestment} atual é de ${investment.valueInvested}$ investidos`)
-            return 1
+           }
+
+           investment.valueInvested -= valueToWitdraw
+           console.log(`Você sacou ${valueToWitdraw}R$ do investimento ${investment.nameInvestment} `)
+           return console.log("operação feita com sucesso")
+
         }
       })
 
-      console.log("Nome não encontrado")
-      
-      return 0
+      console.log('!')
       
     }
 
@@ -175,12 +189,12 @@ class Savings extends Account {
     }
 
     withdraw(valueToWitdraw: number): number {
-        if(valueToWitdraw > this.getBalance()) {
+        if(this._saivings !== null && valueToWitdraw > this._saivings.valueInvested) {
             console.log("Saldo insuficiente")
             return 0
         }
 
-        if(this._saivings !== null) {
+        else if(this._saivings !== null) {
             this._saivings.valueInvested -= valueToWitdraw
             console.log("Sucesso na operação")
             console.log(`O saldo atual da poupança é de ${this._saivings.valueInvested}`)
@@ -275,19 +289,19 @@ const c2 = new AccountCurrent(newUser2, TypesAccounts.Current)
 const c3 = new Savings(newUser3, TypesAccounts.Savings)
 
 
-// c1.addBalance(80000)
-// c1.makeInvestment("Imobiliaria", 1200, new Date(), "alto", "Imobiliario", 4)
-// c1.makeInvestment("Tesouro selic", 4000, new Date(), 'medio', 'Tesouro', 6)
-// c1.withdraw(1000, 'Imobiliaria')
-// c1.calculateRoi()
+c1.addBalance(80000)
+c1.makeInvestment("Imobiliaria", 1200, new Date(), "alto", "Imobiliario", 4)
+c1.makeInvestment("Tesouro selic", 4000, new Date(), 'medio', 'Tesouro', 6)
+c1.withdrawInInvestment(1200, 'Imobiliaria')
+c1.calculateRoi()
 
-c2.addBalance(5000) 
-c2.transferMoney(c1, 1000)
-console.log(c1)
+// c2.addBalance(5000) 
+// c2.transferMoney(c1, 1000)
+// console.log(c1)
 
-c3.addBalance(500000)
-c3.createSavings(40000, new Date(), 76)
-c3.addSavings(100)
+// c3.addBalance(500000)
+// c3.createSavings(40000, new Date(), 76)
+// c3.addSavings(100)
 
 
-console.log(c3.getSavings())
+// console.log(c3.getSavings())
