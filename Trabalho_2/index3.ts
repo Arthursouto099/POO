@@ -86,12 +86,14 @@ class GasStation {
     private _gasolineStock: {gasolineLiter: number} = { gasolineLiter: 30000}
     private _gasolineCheck: {status: string} = {status: 'full' }
     private _prices: {diesel: number, gasoline: number} = { diesel: 6.06, gasoline: 6.29 }
-    private _invoices: Array<{ company: string; value: number; client: string; vehicle: string; discount: number; FinalValue: number; }> = []
+    private _invoicesformatted: Array<{ company: string; value: number; client: string; vehicle: string; discount: number; FinalValue: number; }> = []
+    private invoices: Array<Invoice> = []
 
     constructor(public name: string) {}
 
     private GenerateInvoice(company: GasStation, value: number,  owner: Customer | Client, vehicle: Vehicle, vehicleType: VehicleType,  paymentMethod: 'Dinheiro' | CardPayment) {
         const invoice = new Invoice(company, value, owner, vehicle, vehicleType)
+        this.invoices.push(invoice)
         return {
          company: this.name,
          value: Number(value.toFixed(2)),   
@@ -112,7 +114,7 @@ class GasStation {
     }
 
     public getInvoices() {
-        return this._invoices
+        return this._invoicesformatted
     }
 
     public toFill() {
@@ -153,7 +155,7 @@ class GasStation {
 
         if(value !== null) {
             const invoice = this.GenerateInvoice(this, value, client, vehicle, vehicle.VehicleType, paymentMethod)
-            this._invoices.push(invoice)
+            this._invoicesformatted.push(invoice)
             console.log(invoice)
             return invoice
         }
