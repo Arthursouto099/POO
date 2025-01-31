@@ -1,12 +1,8 @@
 import { Sector } from "../abstracts/Sector";
 
-export class Emergency  extends Sector{
-    constructor(name: string) {
+export class Physiotical extends Sector{
+    constructor(name: string){
         super(name)
     }
 }
-
-
-
-
 

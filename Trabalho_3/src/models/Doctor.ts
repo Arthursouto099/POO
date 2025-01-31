@@ -1,5 +1,5 @@
-import {Person} from './Person'
-import { Specialization } from './Specialization';
+import {Person} from '../abstracts/Person'
+import { Specialization } from '../Enums/Specialization';
 import { Patient } from './Patient';
 import { Address } from './Address';
 

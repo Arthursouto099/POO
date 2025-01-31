@@ -5,9 +5,9 @@ export enum Specialization {
     Oncologist = 'oncologist',
     Cardiologist = 'cardiologist',
     Neurologist = 'neurologist',
-    Radiologist = 'radiologist',
-    Physiotherapist = 'physioterapist',
+    Psysiotherapist = 'physioterapist',
     Psychiatrist = 'psychiatrist',
-    Pharmaceutical = 'pharmaceutical',
+    PharmaceuRadiologist = 'radiologist',
+    Physiotical = 'pharmaceutical',
 
 }

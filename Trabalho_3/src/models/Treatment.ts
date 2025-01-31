@@ -3,7 +3,7 @@ import { Nurse } from "./Nurse";
 import { Patient } from "./Patient";
 
 
-export class Tratament {
+export class Treatment {
     doctor: Doctor;
     description: string;
     nurse: Nurse;
@@ -15,8 +15,6 @@ export class Tratament {
         this.description = description;
         this.nurse = nurse;
         this.patient = patient;
-        this.addPatientInDoctorList(this.doctor, this.patient);
-        this.addPatienInNurseList(this.nurse, this.patient);
         this.patient.treatments.push(this);
     }
 
@@ -25,13 +23,7 @@ export class Tratament {
     }
 
 
-    private addPatientInDoctorList(doctor: Doctor, patient: Patient): void {
-        doctor.patients.push(patient);
-    }
-
-    private addPatienInNurseList(nurse: Nurse, patient: Patient) {
-        nurse.patients.push(patient)
-    }
+   
     
 
 
