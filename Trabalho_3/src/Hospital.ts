@@ -1,43 +1,3 @@
-// class Emergency{doctor: Doctor; nurse:Nurse} 00000000000
-    
-// class ICU{} //intensive care unit 0000000000000000000000
-
-// class SurgicalCenter{} 0000000000000000
-
-// class Infirmary{} 000000000000000
-
-// class Pediatrics{}
-
-// class Maternity{}
-
-// class Oncology{}
-
-// class Orthopedics{}
-
-// class Cardiology{}
-
-// class Neurology{}
-
-// class Radiology{}
-
-// class CAL{} //clinical analysis laboratory 0000000000000000
-
-// class physiotherapy{}
-
-// class psychiatry{}
-
-// class pharmacy{}
-
-// abstract class Person {
-
-// }
-
-// class Doctor extends Person{}
-
-// class Nurse extends Person{}
-
-// class Patient extends Person{}
-
 
 import { Treatment } from "./models/Treatment";
 import { Doctor } from "./models/Doctor";
@@ -124,6 +84,8 @@ psychiatristSector.addNurse(nurse2)
 
 
 
+
+
 class Hospital {
     name: string;
     sectors: Sector[] = [];
@@ -131,6 +93,11 @@ class Hospital {
     constructor(name: string) {
         this.name = name;
     }
+
+  
+  
+
+    
 
     public triage(patient: Patient) {
         let expert: Specialization[] = []
@@ -154,12 +121,12 @@ class Hospital {
         }
         catch(err: any) {
             console.log(err)
-
         } 
 
         expert.forEach(nameSector => {
             this.sectors.forEach(sector => {
                const name = sector.nameSectorSpecialty.split(' ')[0]
+        
                
                if(name === nameSector.toLowerCase()) {
                     sectorsRecommended.push(sector)
@@ -199,17 +166,34 @@ class Hospital {
    }
 
 
-  public initTreatement(doctor: Doctor, description: string, nurse: Nurse, patient: Patient) {
+  public initTreatement(doctor: Doctor, description: string, nurse: Nurse, patient: Patient, medicaments: string[]) {
         const treatment = new Treatment(doctor, description, nurse, patient)
+        medicaments.forEach(medicament => {
+            treatment.addMedicament(medicament)
+        })
+      
+
         if(patient.doctor === null) {
-            console.log('Paciente não passou pela consulta')
+            console.log('Paciente não passou pela Triagem')
+            console.log("---> Encaminhando paciente para a triagem")
+            const forwarding =  this.triage(patient)
+            this.initTreatement(forwarding.doctor, description, forwarding.nurse, forwarding.patient, medicaments)
         }
+        
+        
+        
+        
 
-
+        return {
+            title: `-> tratamento do paciente ${treatment.patient.name} <-`,
+            description,
+            patient: treatment.patient.name,
+            doctor: treatment.doctor.name,
+            nurse: treatment.nurse.name,
+            medicaments:treatment.medicaments,
+            sector: treatment.patient.sector?.nameSectorSpecialty
+        }
   }
-
-
-
 
 }
 
@@ -217,41 +201,20 @@ class Hospital {
 
 const h1n1 = new Hospital('Centenario')
 
-h1n1.sectors.push(cardiologistSector, emergencySector, neurologistSector, pediatricSector, oncologistSector, orthopedicSector, pharmaceuradiologistSector, 
-physioticalSector, phychiatristSector, psychiatristSector)
+
+h1n1.sectors.push(cardiologistSector, neurologistSector, pediatricSector, oncologistSector, orthopedicSector, pharmaceuradiologistSector, physioticalSector, 
+phychiatristSector, psychiatristSector)
+
+/* iniciando a triagem
+    1 -> Estanciar o objeto Patient ao mesmo tempo que estaciamos o objeto Address
+    2 -> Iniciar o metódo estático Triagem do objeto Hospital
+*/
 
 
+// ---> 1
+const patient1 = new Patient("Leornado", "123-456-789-10", new Address("Rua Guimarões", 15, 9405700), 5199497551, "mild", 'Sinto uma dor de cabeça persistente');
 
 
+// ---> 2
 
-
-
-
-const triage = h1n1.triage(new Patient('Vitoria', '556-333-333-22', new Address('Rua duelingo', 178, 9305400), 5199394566, 'serious', 'Dor de cu'))
-
-
-
-
-
-
-
-
-// const endereco1 = new Address('Rua nova feitoria', 1568539, 93054000)
-// const doutor1 = new Doctor('Rafel', '155-333-333-33', endereco1, 5199393939, 38634829643896, Specialization.Cardiologist, 78 )
-// const patient1 = new Patient('Julia', '764-444-444-44', endereco1, 32332, 'moderate')
-// const nurse = new Nurse('Vitotia', '646-444-444-44', endereco1, 32897327023, 32790327, Specialization.Cardiologist, 70)
-// const novoTratamento = new Treatment(doutor1, 'tratamento bem legal', nurse, patient1)
-
-
-// setor1.getPatientHistoric(patient1)
-
-
-// console.log(novoTratamento)
-
-// class Hospital{
-//     name:string;
-//     address: Address;
-//     doctors: Doctor;
-//     patients: Patient;
-//     nurses: Nurse
-// }
+const triagem = h1n1.triage(patient1)

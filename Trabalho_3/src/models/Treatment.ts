@@ -1,6 +1,7 @@
 import { Doctor } from "./Doctor";
 import { Nurse } from "./Nurse";
 import { Patient } from "./Patient";
+import { Sector } from "../abstracts/Sector";
 
 
 export class Treatment {
@@ -9,6 +10,7 @@ export class Treatment {
     nurse: Nurse;
     patient: Patient;
     medicaments: String[] = [];
+
 
     constructor(doctor: Doctor, description: string, nurse: Nurse, patient: Patient) {
         this.doctor = doctor;
