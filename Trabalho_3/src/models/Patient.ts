@@ -6,7 +6,7 @@ import { Doctor } from "./Doctor";
 
 
 export class Patient extends Person {
-    degree: 'serious' | 'moderate' | 'mild' ;
+    degree: 'serious' | 'moderate' | 'mild' | string ;
     treatments: Treatment[] = [];
     hospitalStretcher: true | false = false;
     description: string;

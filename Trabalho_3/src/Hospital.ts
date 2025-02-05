@@ -18,6 +18,7 @@ import { PharmaceuRadiologist } from "./models/PharmaceuRadiologist";
 import { Physiotical } from "./models/Physiotical";
 import { Psychiatrist } from "./models/Psychiatrist";
 import { therapist } from "./models/Therapist";
+import * as rl from 'readline-sync'
 
 // Setores
 
@@ -95,13 +96,17 @@ class Hospital {
     }
 
   
-  
-
     
 
     public triage(patient: Patient) {
         let expert: Specialization[] = []
         let sectorsRecommended: Sector[] = []
+
+        console.log("-----> Iniciando a triagem do paciente <------\n")
+        console.log("Informações do paciente: ")
+        console.log({name: patient.name,cpf: patient.cpf,degree: patient.degree})
+        console.log('\n')
+
 
         try {
             switch(patient.degree) {
@@ -135,10 +140,16 @@ class Hospital {
             
         })
 
+        console.log("--> Setores recomendados, dado o problema do paciente")
+        console.log("-----------------------------------------------------\n")
+
         console.log({
             title: "Setores recomendados",
             sectorsRecommended
         })
+        console.log("\n")
+        rl.question("Clique qualquer tecla para proseguir: ")
+        console.clear()
 
         const sector: Sector = this.addPatientInSetor(patient, sectorsRecommended)
         const doctor: Doctor = sector.doctors[0]
@@ -147,10 +158,17 @@ class Hospital {
         nurse.patients.push(patient)
         patient.doctor = doctor
 
+        console.log("--> Setor escolhido ao paciente " + patient.name + "<--")
         console.log({
             title: 'Setor escolhido',
             sector: sector
         })
+
+        console.log("Tudo pronto para iniciar o tratamento")
+        console.log('\n')
+        console.log("A triagem retorna um objeto contendo um doutor,  uma enfermeira e o paciente")
+        console.log('\n')
+
 
 
     return {patient: patient, doctor: doctor, nurse: nurse}
@@ -158,8 +176,15 @@ class Hospital {
    }
 
    private addPatientInSetor(patient: Patient, sectors: Sector[]) {
-        const randomSector = Math.floor(Math.random() * sectors.length)
-        const sector = sectors[randomSector]
+        sectors.forEach(sector => {
+        console.log(`ID: ${sectors.indexOf(sector)}, NAMESECTOR: ${sector.nameSectorSpecialty}`)
+        })
+        console.log("\n")
+
+        const option = rl.questionInt("Digite o id do sector que deseja encaminha o paciente: ")
+        console.log("\n")
+
+        const sector = sectors[option]
         sector.addPatient(patient); 
         patient.sector = sector
         return sector
@@ -197,24 +222,26 @@ class Hospital {
 
 }
 
+export const hospital = new Hospital("Santa Cruz")
+// const h1n1 = new Hospital('Centenario')
 
 
-const h1n1 = new Hospital('Centenario')
-
-
-h1n1.sectors.push(cardiologistSector, neurologistSector, pediatricSector, oncologistSector, orthopedicSector, pharmaceuradiologistSector, physioticalSector, 
+hospital.sectors.push(cardiologistSector, neurologistSector, pediatricSector, oncologistSector, orthopedicSector, pharmaceuradiologistSector, physioticalSector, 
 phychiatristSector, psychiatristSector)
 
-/* iniciando a triagem
-    1 -> Estanciar o objeto Patient ao mesmo tempo que estaciamos o objeto Address
-    2 -> Iniciar o metódo estático Triagem do objeto Hospital
-*/
+// /* iniciando a triagem
+//     1 -> Estanciar o objeto Patient ao mesmo tempo que estaciamos o objeto Address
+//     2 -> Iniciar o metódo estático Triagem do objeto Hospital
+// */
 
 
-// ---> 1
-const patient1 = new Patient("Leornado", "123-456-789-10", new Address("Rua Guimarões", 15, 9405700), 5199497551, "mild", 'Sinto uma dor de cabeça persistente');
+// // ---> 1
+// const patient1 = new Patient("Leornado", "123-456-789-10", new Address("Rua Guimarões", 15, 9405700), 5199497551, "mild", 'Sinto uma dor de cabeça persistente');
 
 
-// ---> 2
+// // ---> 2
 
-const triagem = h1n1.triage(patient1)
+// const triagem = h1n1.triage(patient1)
+
+// const question = rl.question("Digite seu nome: ")
+// console.log(question)
