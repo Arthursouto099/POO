@@ -10,7 +10,7 @@ import { Sector } from "./abstracts/Sector";
 import { Cardiologist } from "./models/Cardiologist";
 import { Emergency } from "./models/Emergency";
 import { Equipaments } from "./models/Equipaments";
-import { Neurologist } from "./models/Neurologist"; 
+import { Neurologist } from "./models/Neurologist";
 import { Pediatrics } from "./models/Pediatric";
 import { Oncologist } from "./models/Oncologist";
 import { Orthopedics } from "./models/Orthopedic";
@@ -29,7 +29,7 @@ const pediatricSector = new Pediatrics('pediatric')
 const oncologistSector = new Oncologist('oncologist')
 const orthopedicSector = new Orthopedics('orthopedic')
 const pharmaceuradiologistSector = new PharmaceuRadiologist('radiologist')
-const physioticalSector=  new Physiotical('physiotical')
+const physioticalSector = new Physiotical('physiotical')
 const phychiatristSector = new Psychiatrist('phychiatrist')
 const psychiatristSector = new therapist('psychiatrist')
 
@@ -95,8 +95,8 @@ class Hospital {
         this.name = name;
     }
 
-  
-    
+
+
 
     public triage(patient: Patient) {
         let expert: Specialization[] = []
@@ -104,40 +104,40 @@ class Hospital {
 
         console.log("-----> Iniciando a triagem do paciente <------\n")
         console.log("Informações do paciente: ")
-        console.log({name: patient.name,cpf: patient.cpf,degree: patient.degree})
+        console.log({ name: patient.name, cpf: patient.cpf, degree: patient.degree })
         console.log('\n')
 
 
         try {
-            switch(patient.degree) {
+            switch (patient.degree) {
                 case 'mild':
                     expert.push(Specialization.Psychiatrist, Specialization.PharmaceuRadiologist)
-                break
-    
+                    break
+
                 case 'moderate':
                     expert.push(Specialization.Psychiatrist, Specialization.Physiotical, Specialization.Pediatric, Specialization.Orthopedic)
-                break
-    
+                    break
+
                 case 'serious':
                     expert.push(Specialization.Oncologist, Specialization.Neurologist, Specialization.Cardiologist);
                     patient.hospitalStretcher = true;
-                break
+                    break
             }
         }
-        catch(err: any) {
+        catch (err: any) {
             console.log(err)
-        } 
+        }
 
         expert.forEach(nameSector => {
             this.sectors.forEach(sector => {
-               const name = sector.nameSectorSpecialty.split(' ')[0]
-        
-               
-               if(name === nameSector.toLowerCase()) {
+                const name = sector.nameSectorSpecialty.split(' ')[0]
+
+
+                if (name === nameSector.toLowerCase()) {
                     sectorsRecommended.push(sector)
-               }
-            }) 
-            
+                }
+            })
+
         })
 
         console.log("--> Setores recomendados, dado o problema do paciente")
@@ -150,6 +150,8 @@ class Hospital {
         console.log("\n")
         rl.question("Clique qualquer tecla para proseguir: ")
         console.clear()
+        console.log("----> SETORES <---- ")
+        console.log("\n")
 
         const sector: Sector = this.addPatientInSetor(patient, sectorsRecommended)
         const doctor: Doctor = sector.doctors[0]
@@ -166,48 +168,47 @@ class Hospital {
 
         console.log("Tudo pronto para iniciar o tratamento")
         console.log('\n')
-        console.log("A triagem retorna um objeto contendo um doutor,  uma enfermeira e o paciente")
         console.log('\n')
 
 
 
-    return {patient: patient, doctor: doctor, nurse: nurse}
+        return { patient: patient, doctor: doctor, nurse: nurse }
 
-   }
+    }
 
-   private addPatientInSetor(patient: Patient, sectors: Sector[]) {
+    private addPatientInSetor(patient: Patient, sectors: Sector[]) {
         sectors.forEach(sector => {
-        console.log(`ID: ${sectors.indexOf(sector)}, NAMESECTOR: ${sector.nameSectorSpecialty}`)
+            console.log(`ID: ${sectors.indexOf(sector)}, NAME_SECTOR: ${sector.nameSectorSpecialty}, QUANTITY_PATIENTS: ${this.sectors[this.sectors.indexOf(sector)].patients.length}`)
         })
         console.log("\n")
 
-        const option = rl.questionInt("Digite o id do sector que deseja encaminha o paciente: ")
+        const option = rl.questionInt("Digite o id do sector que deseja encaminhar o paciente: ")
         console.log("\n")
 
         const sector = sectors[option]
-        sector.addPatient(patient); 
+        sector.addPatient(patient);
         patient.sector = sector
         return sector
-   }
+    }
 
 
-  public initTreatement(doctor: Doctor, description: string, nurse: Nurse, patient: Patient, medicaments: string[]) {
+    public initTreatement(doctor: Doctor, description: string, nurse: Nurse, patient: Patient, medicaments: string[]) {
         const treatment = new Treatment(doctor, description, nurse, patient)
         medicaments.forEach(medicament => {
             treatment.addMedicament(medicament)
         })
-      
 
-        if(patient.doctor === null) {
+
+        if (patient.doctor === null) {
             console.log('Paciente não passou pela Triagem')
             console.log("---> Encaminhando paciente para a triagem")
-            const forwarding =  this.triage(patient)
+            const forwarding = this.triage(patient)
             this.initTreatement(forwarding.doctor, description, forwarding.nurse, forwarding.patient, medicaments)
         }
-        
-        
-        
-        
+
+
+
+
 
         return {
             title: `-> tratamento do paciente ${treatment.patient.name} <-`,
@@ -215,10 +216,59 @@ class Hospital {
             patient: treatment.patient.name,
             doctor: treatment.doctor.name,
             nurse: treatment.nurse.name,
-            medicaments:treatment.medicaments,
+            medicaments: treatment.medicaments,
             sector: treatment.patient.sector?.nameSectorSpecialty
         }
-  }
+    }
+
+
+    public getHistoricPatientBySector(): void {
+        console.log('----> Setores <----\n')
+
+        this.sectorListFormated()
+
+       
+
+
+
+    }
+
+    
+
+    private sectorListFormated(): void  {
+        this.sectors.forEach(sector => {
+            console.log(`ID: ${this.sectors.indexOf(sector)}, NAME_SECTOR: ${sector.nameSectorSpecialty} QUANTITY_PATIENTS: ${this.sectors[this.sectors.indexOf(sector)].patients.length}`)
+        })
+        console.log("\n")
+
+        const option = rl.questionInt("Digite o ID do setor que deseja escolher: \n")
+
+        console.log(`< Pacientes no setor: ${this.sectors[option].nameSectorSpecialty} >\n`)
+
+        if(this.sectors[option].patients.length < 1) {
+            console.log("Nenhum paciente cadastrado\n")
+            return
+        }
+
+        this.sectors[option].patientsListFormated()
+        console.log("\n")
+
+        const optionPatient = rl.questionInt("DIgite o ID do paciente que deseja ver o historico: \n")
+    
+
+        const patient = this.sectors[option].patients[optionPatient]
+
+        console.log("< Tratamentos do paciente " + patient.name + " com o cpf de " + patient.cpf + " >\n")
+        patient.getTreatments().forEach(treatment => {
+            console.log(`POSITION: ${patient.treatments.length} , Patient: ${treatment.patient.name}, Doctor: ${treatment.doctor.name}, Nurse: ${treatment.nurse.name} Description: ${treatment.description}, Medicaments: ${treatment.medicaments}`)
+            console.log("----------------------------------------------------------------------------------------------------------------------------------")
+        })
+        console.log("\n")
+
+
+    }
+
+
 
 }
 
@@ -226,8 +276,8 @@ export const hospital = new Hospital("Santa Cruz")
 // const h1n1 = new Hospital('Centenario')
 
 
-hospital.sectors.push(cardiologistSector, neurologistSector, pediatricSector, oncologistSector, orthopedicSector, pharmaceuradiologistSector, physioticalSector, 
-phychiatristSector, psychiatristSector)
+hospital.sectors.push(cardiologistSector, neurologistSector, pediatricSector, oncologistSector, orthopedicSector, pharmaceuradiologistSector, physioticalSector,
+    phychiatristSector, psychiatristSector)
 
 // /* iniciando a triagem
 //     1 -> Estanciar o objeto Patient ao mesmo tempo que estaciamos o objeto Address

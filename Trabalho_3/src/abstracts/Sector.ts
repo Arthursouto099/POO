@@ -34,7 +34,13 @@ export abstract class Sector {
     public getPatientHistoric(patient: Patient): void {
         console.log(patient.getTreatments())
     }
- 
+
+    public patientsListFormated(): void {
+        this.patients.forEach((patient) => {
+        console.log(`ID: ${this.patients.indexOf(patient)}, NAME: ${patient.name} CPF: ${patient.cpf}`)    
+        })
+    }
+  
 }
 
 
